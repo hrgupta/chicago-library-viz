@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Oscar Dataset Visualization</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/white.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Questrial" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/js/head.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.3.4"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@4"></script>
+
+    <link rel="stylesheet/less" type="text/css" href="styles.less" />
+
+</head>
+<body>
+
+    <center><h1>Assignment 4 - Academy Awards Dataset Visualization</h1></center>
+
+    <div id="vis"></div>
+
+    <!-- This is from the example embedded vega-lite demo -->
+    <script type="text/javascript">
+        var oscarviz = {
+            $schema: 'https://vega.github.io/schema/vega-lite/v3.0.json',
+            description: 'Academy awards visualization.',
+            data: { url: 'data_csv.csv'},
+            resolve: {
+                "scale": {"color": "independent"},
+                "legend": {"color": "independent"}
+            },
+            columns: 2,
+            concat: [
+                {
+                    selection: {
+                        'brush': {
+                            "type": "interval"
+                        }
+                    },
+                    title: 'Oscars given per year',
+                    mark: {
+                        'type': 'line',
+                        "interpolate": "step-after"
+                    },
+                    encoding: {
+                        x: {
+                            timeUnit: 'year',
+                            field: 'year',
+                            type: 'temporal',
+                            axis: {"title": "Oscar year"}
+                        },
+                        y: {
+                            type: 'quantitative',
+                            aggregate : 'count',
+                            axis: {"title": "Number of Oscar winners"}
+                        },
+                        "color": {"value": "green"}
+                    },
+                    transform: [
+                        {
+                            filter: {
+                                field: 'winner',
+                                oneOf: ["True"]
+                            }
+                        }
+                    ],
+                },
+                {
+                    title: 'Nominated vs Winner Ratio',
+                    mark: 'bar',
+                    encoding: {
+                        x: {
+                            timeUnit: 'year',
+                            field: 'year',
+                            type: 'temporal',
+                            axis: {"title": "Oscar year"}
+                        },
+                        y: {
+                            aggregate : 'count',
+                            axis: {"title": "Nominated vs Winner"}
+                        },
+                        "color": {
+                            "field": "winner", "type": "nominal",
+                        }
+                    }
+                },
+                {
+                    title: 'Top 10 Nominations',
+                    transform: [
+                        {
+                            filter: {
+                                selection : 'brush'
+                            }
+                        },
+                        {
+                            "aggregate": [{"op": "count", "field": 'winner', "as": "Number"}],
+                            "groupby": ["entity"]
+                        },
+                        {
+                            "window": [{"op": "row_number", "as": "rank"}],
+                            "sort": [{ "field": "Number", "order": "descending" }]
+                        },
+                        {
+                            "filter": "datum.rank <= 10"
+                        }
+                    ],
+                    mark: 'point',
+                    encoding: {
+                        y: {
+                            field: 'entity',
+                            type: 'nominal',
+                            sort: {"encoding": "x", 'order': 'descending'},
+                            axis: {"title": "Film"}
+                        },
+                        x: {
+                            field: 'Number',
+                            type: 'quantitative',
+                            axis: {"title": "Number of Nominations"},
+                            /*scale: {
+                                domain : [0,25]
+                            }*/
+                        },
+                        "color": {
+                        "field": "Number",
+                        }
+                    }
+                },
+                {
+                    title: 'Winners in most awarded categories',
+                    mark: {
+                        'type': 'point',
+                    },
+                    transform: [
+                        {
+                            filter: {
+                                selection: "brush"
+                            }
+                        },
+                        {
+                            filter: {
+                                field: 'winner',
+                                oneOf: ["True"],
+                            },
+                        },
+                        {
+                            joinaggregate: [{
+                                "op": "count", field: "year", "as": "con"
+                            }],
+                            "groupby": ["category"]
+                        },
+                        {
+                            filter: {
+                                field: "con", gte: 45,
+                            }
+                        },
+                        {
+                            filter: 'datum.category != regexp(\'^SCIENTIFIC\')'
+                        }
+                    ],
+                    encoding: {
+                        x: {
+                            timeUnit: 'year',
+                            field: 'year',
+                            type: 'temporal',
+                            axis: {"title": "Oscar year"}
+                        },
+                        y: {
+                            field: 'category',
+                            type: 'nominal',
+                        },
+                        detail: { field: "entity", type: "nominal", axis: {"title": "Winner"}},
+                        "color": {"field": "con", axis: {"title": "Winner"}}
+                    },
+                }
+            ]
+        };
+        vegaEmbed('#vis', oscarviz);
+    </script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.min.js" ></script>
+</body>
+</html>
