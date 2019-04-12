@@ -38,7 +38,7 @@
                 "scale": {"color": "independent"},
                 "legend": {"color": "independent"}
             },
-            columns: 2,
+            columns: 3,
             concat: [
                 {
                     selection: {
@@ -94,6 +94,53 @@
                     }
                 },
                 {
+                    title: 'Winners in most awarded categories',
+                    mark: {
+                        'type': 'point',
+                    },
+                    transform: [
+                        {
+                            filter: {
+                                selection: "brush"
+                            }
+                        },
+                        {
+                            filter: {
+                                field: 'winner',
+                                oneOf: ["True"],
+                            },
+                        },
+                        {
+                            joinaggregate: [{
+                                "op": "count", field: "year", "as": "con"
+                            }],
+                            "groupby": ["category"]
+                        },
+                        {
+                            filter: {
+                                field: "con", gte: 60,
+                            }
+                        },
+                        {
+                            filter: 'datum.category != regexp(\'^SCIENTIFIC\')'
+                        }
+                    ],
+                    encoding: {
+                        x: {
+                            timeUnit: 'year',
+                            field: 'year',
+                            type: 'temporal',
+                            axis: {"title": "Oscar year"}
+                        },
+                        y: {
+                            field: 'category',
+                            type: 'nominal',
+                        },
+                        detail: { field: "entity", type: "nominal", axis: {"title": "Winner"}},
+                        "color": {"field": "con", axis: {"title": "Winner"}}
+                    },
+                },
+                {
                     title: 'Top 10 Nominations',
                     transform: [
                         {
@@ -133,53 +180,6 @@
                         "field": "Number",
                         }
                     }
-                },
-                {
-                    title: 'Winners in most awarded categories',
-                    mark: {
-                        'type': 'point',
-                    },
-                    transform: [
-                        {
-                            filter: {
-                                selection: "brush"
-                            }
-                        },
-                        {
-                            filter: {
-                                field: 'winner',
-                                oneOf: ["True"],
-                            },
-                        },
-                        {
-                            joinaggregate: [{
-                                "op": "count", field: "year", "as": "con"
-                            }],
-                            "groupby": ["category"]
-                        },
-                        {
-                            filter: {
-                                field: "con", gte: 45,
-                            }
-                        },
-                        {
-                            filter: 'datum.category != regexp(\'^SCIENTIFIC\')'
-                        }
-                    ],
-                    encoding: {
-                        x: {
-                            timeUnit: 'year',
-                            field: 'year',
-                            type: 'temporal',
-                            axis: {"title": "Oscar year"}
-                        },
-                        y: {
-                            field: 'category',
-                            type: 'nominal',
-                        },
-                        detail: { field: "entity", type: "nominal", axis: {"title": "Winner"}},
-                        "color": {"field": "con", axis: {"title": "Winner"}}
-                    },
                 }
             ]
         };
