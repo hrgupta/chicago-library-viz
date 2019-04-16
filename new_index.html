@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SPR2019-ADV Project</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/white.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Questrial" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/js/head.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vega"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed"></script>
+
+    <link rel="stylesheet/less" type="text/css" href="styles.less" />
+
+</head>
+
+<body>
+    <h1>Champaign County</h1>
+    <div id="vis"></div>
+    <!-- This is from the example embedded vega-lite demo -->
+    <script type="text/javascript">
+        var myvegaspec = {
+            $schema: 'https://vega.github.io/schema/vega-lite/v3.0.json',
+            description: 'A simple bar chart with embedded data.',
+            'transform': [{
+                "lookup": "code",
+                "from": {
+                    "fields": ["code_type"],
+                    "key": "code",
+                    "data": {
+                        "values": [
+                            { "code": "CB1", "code_type": "Commercial" },
+                            { "code": "CB2", "code_type": "Commercial" },
+                            { "code": "CB3", "code_type": "Commercial" },
+                            { "code": "CG", "code_type": "Commercial" },
+                            { "code": "CI", "code_type": "Commerical" },
+                            { "code": "CN", "code_type": "Commercial" },
+                            { "code": "CO", "code_type": "Commercial" },
+                            { "code": "I1", "code_type": "Industrial" },
+                            { "code": "I2", "code_type": "Industrial" },
+                            { "code": "IBP", "code_type": "Commercial" },
+                            { "code": "IOP", "code_type": "Commercial" },
+                            { "code": "IT-MF", "code_type": "In-Town" },
+                            { "code": "IT-MX", "code_type": "In-Town" },
+                            { "code": "IT-NC", "code_type": "In-Town" },
+                            { "code": "IT-SF1", "code_type": "In-Town" },
+                            { "code": "IT-SF2", "code_type": "In-Town" },
+                            { "code": "MF1", "code_type": "Residential" },
+                            { "code": "MF2", "code_type": "Residential" },
+                            { "code": "MF3", "code_type": "Residential" },
+                            { "code": "MFUniv", "code_type": "Residential" },
+                            { "code": "MHP", "code_type": "Residenial" },
+                            { "code": "SF1", "code_type": "Residential" },
+                            { "code": "SF2", "code_type": "Residential" }
+                        ]
+                    }
+                }
+            }],
+            data: {
+                name: 'champaign_zoning', url: './champaign.topojson',
+                "format": {
+                    "type": "topojson",
+                    "feature": "Zoning"
+                }
+            },
+            "mark": "geoshape",
+            "projection": {
+                "type": "albersUsa"
+            },
+            "encoding": {
+                "color": { "field": "properties.zoning_code", "type": "nominal" }
+            }
+        };
+        vegaEmbed('#vis', myvegaspec);
+    </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.min.js"></script>
+</body>
+
+</html>
